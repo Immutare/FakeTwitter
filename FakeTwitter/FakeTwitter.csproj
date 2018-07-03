@@ -94,8 +94,8 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="System.IdentityModel" />
-    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.2.4\lib\net451\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.20622.1351, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.2.206221351\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -148,16 +148,37 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
+    <None Include="keys.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\Startup.OAuth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\Group.cs" />
-    <Compile Include="Controllers\Tweet.cs" />
-    <Compile Include="Controllers\User.cs" />
+    <Compile Include="Controllers\GroupsController.cs" />
+    <Compile Include="Controllers\PeopleController.cs" />
+    <Compile Include="Controllers\TweetsController.cs" />
+    <Compile Include="Core\FakeTwitterContext.cs" />
+    <Compile Include="Core\Initializer.cs" />
+    <Compile Include="Core\TwitterUserManager.cs" />
+    <Compile Include="Core\TwitterUserStore.cs" />
+    <Compile Include="EntityConfiguration\GroupConfiguration.cs" />
+    <Compile Include="EntityConfiguration\TweetConfiguration.cs" />
+    <Compile Include="EntityConfiguration\PersonConfiguration.cs" />
+    <Compile Include="Identity\CustomJwtFormat.cs" />
+    <Compile Include="Identity\CustomOAuthProvider.cs" />
+    <Compile Include="Migrations\201807031419149_InitialMigration.cs" />
+    <Compile Include="Migrations\201807031419149_InitialMigration.Designer.cs">
+      <DependentUpon>201807031419149_InitialMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Group.cs" />
+    <Compile Include="Models\Tweet.cs" />
+    <Compile Include="Models\Person.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -170,9 +191,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Core\" />
-    <Folder Include="EntityConfiguration\" />
-    <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201807031419149_InitialMigration.resx">
+      <DependentUpon>201807031419149_InitialMigration.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

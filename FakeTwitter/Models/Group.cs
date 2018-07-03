@@ -3,22 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace FakeTwitter.Controllers
+namespace FakeTwitter.Models
 {
-    public class Tweet
+    public class Group
     {
         //-------------------------------------------------------------------------------------------------------------
         //                                                  //PROPERTIES
         //-------------------------------------------------------------------------------------------------------------
         public int Id { get; set; }
-        public string Likes { get; set; }
-        public DateTime DatePublished { get; set; }
-        public string Text { get; set; }
-        public string Images { get; set; }
+        public string Name { get; set; }
         //-------------------------------------------------------------------------------------------------------------
         //                                                  //RELATIONSHIPS
         //-------------------------------------------------------------------------------------------------------------
-        public virtual User User { get; set; }
-        public virtual Tweet Response { get; set; }
+        public virtual List<Person> People { get; set; }
     }
 }
