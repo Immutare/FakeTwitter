@@ -52,7 +52,8 @@ namespace FakeTwitter.Identity
 
             //Error
             //The entity type IdentityUser is not part of the model for the current context.
-            var userRoles = context.OwinContext.Get<TwitterUserManager>().GetRoles(user.Id.ToString());
+            var userRoles = context.OwinContext.Get<TwitterUserManager>().GetRoles(user.Id);
+            // var userRoles = context.OwinContext.Get<TwitterUserManager>().GetRoles(user.Id.ToString());
             foreach (var role in userRoles)
             {
                 identity.AddClaim(new Claim(ClaimTypes.Role, role));

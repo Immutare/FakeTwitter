@@ -19,7 +19,6 @@ namespace FakeTwitter.Controllers
         private FakeTwitterContext db = new FakeTwitterContext();
 
         // GET: api/Tweets
-        [Authorize]
         public IQueryable<Tweet> GetTweets(
             //                                              //OPTIONAL PARAMETERS
 
@@ -30,6 +29,8 @@ namespace FakeTwitter.Controllers
             int PersonId = 0,
             //                                              //Filter by @ from person
             string PersonAt = null,
+            //                                              //Filter by group
+            int GroupId = 0,
             //                                              //POPULATE NAVIGATORS
             //                                              //Populate Person(User), true by default
             bool Person = true,
@@ -44,30 +45,32 @@ namespace FakeTwitter.Controllers
             //                                              //FILTERS
             //                                              //Filter by the containing text
             if (Text != null && Text != "")
-                tweetsqueryFinalQuery.Where(t => t.Text.Contains(Text));
+                tweetsqueryFinalQuery = tweetsqueryFinalQuery.Where(t => t.Text.Contains(Text));
             //                                              //Filter by the id from the person/user
             if (PersonId != 0)
-                tweetsqueryFinalQuery.Where(t => t.PersonId == PersonId);
+                tweetsqueryFinalQuery = tweetsqueryFinalQuery.Where(t => t.PersonId == PersonId);
             //                                              //Filter by the @ from the person/user
             if (PersonAt != null && PersonAt != "")
-                tweetsqueryFinalQuery.Where(t => t.Person.At == PersonAt);
+                tweetsqueryFinalQuery = tweetsqueryFinalQuery.Where(t => t.Person.At == PersonAt);
+            //                                              //Filter by the group
+            if (GroupId != 0)
+                tweetsqueryFinalQuery = tweetsqueryFinalQuery.Where(t => t.Person.GroupId == GroupId);
 
             //                                              //POPULATES
             //                                              //Populates the info from the person/user
             if (Person)
-                tweetsqueryFinalQuery.Include(t => t.Person);
+                tweetsqueryFinalQuery = tweetsqueryFinalQuery.Include(t => t.Person).AsNoTracking();
             //                                              //Populates all the replies of the tweets
             if (Responses)
-                tweetsqueryFinalQuery.Include(t => t.Responses);
+                tweetsqueryFinalQuery = tweetsqueryFinalQuery.Include(t => t.Responses).AsNoTracking();
             //                                              //Populate the tweet in response/answered, default true
             if (InResponseTo)
-                tweetsqueryFinalQuery.Include(t => t.InResponseTo);
+                tweetsqueryFinalQuery = tweetsqueryFinalQuery.Include(t => t.InResponseTo).AsNoTracking();
             
-            return tweetsqueryFinalQuery;
+            return tweetsqueryFinalQuery.AsNoTracking();
         }
 
         // GET: api/Tweets/5
-        [Authorize]
         [ResponseType(typeof(Tweet))]
         public async Task<IHttpActionResult> GetTweet(
             int id,                                         //REQUIRED Id for the search
@@ -84,15 +87,15 @@ namespace FakeTwitter.Controllers
             //                                              //POPULATES
             //                                              //Populates the info from the person/user
             if (Person)
-                tweetsqueryFinalQuery.Include(t => t.Person);
+                tweetsqueryFinalQuery = tweetsqueryFinalQuery.Include(t => t.Person);
             //                                              //Populates all the replies of the tweets
             if (Responses)
-                tweetsqueryFinalQuery.Include(t => t.Responses);
+                tweetsqueryFinalQuery = tweetsqueryFinalQuery.Include(t => t.Responses);
             //                                              //Populate the tweet in response/answered, default true
             if (InResponseTo)
-                tweetsqueryFinalQuery.Include(t => t.InResponseTo);
+                tweetsqueryFinalQuery = tweetsqueryFinalQuery.Include(t => t.InResponseTo);
 
-            Tweet tweet = await tweetsqueryFinalQuery.FirstAsync();
+            Tweet tweet = await tweetsqueryFinalQuery.AsNoTracking().FirstAsync();
 
             if (tweet == null)
             {
@@ -103,7 +106,7 @@ namespace FakeTwitter.Controllers
         }
 
         // PUT: api/Tweets/5
-        [Authorize]
+        // [Authorize]
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutTweet(int id, Tweet tweet)
         {
@@ -139,7 +142,7 @@ namespace FakeTwitter.Controllers
         }
 
         // POST: api/Tweets
-        [Authorize]
+        // [Authorize]
         [ResponseType(typeof(Tweet))]
         public async Task<IHttpActionResult> PostTweet(Tweet tweet)
         {
@@ -155,7 +158,7 @@ namespace FakeTwitter.Controllers
         }
 
         // DELETE: api/Tweets/5
-        [Authorize]
+        // [Authorize]
         [ResponseType(typeof(Tweet))]
         public async Task<IHttpActionResult> DeleteTweet(int id)
         {

@@ -20,7 +20,7 @@ namespace FakeTwitter.Controllers
         private FakeTwitterContext db = new FakeTwitterContext();
 
         // GET: api/People
-        [Authorize]
+        // [Authorize]
         public IQueryable<Person> GetPeople(
             //                                              //OPTIONAL PARAMETERS
 
@@ -47,21 +47,21 @@ namespace FakeTwitter.Controllers
             //                                              //FILTERS
             //                                              //Filter by Name
             if (Name != null && Name != "")
-                peoplequeryableFinalQuery.Where(p => p.Name.Contains(Name));
+                peoplequeryableFinalQuery = peoplequeryableFinalQuery.Where(p => p.Name.Contains(Name));
             //                                              //Filter by At (@)
             if (At != null && At != "")
-                peoplequeryableFinalQuery.Where(p => p.At.Contains(At));
+                peoplequeryableFinalQuery = peoplequeryableFinalQuery.Where(p => p.At.Contains(At));
             //                                              //Filter by Email
             if (Email != null && Email != "")
-                peoplequeryableFinalQuery.Where(p => p.Email.Contains(Email));
+                peoplequeryableFinalQuery = peoplequeryableFinalQuery.Where(p => p.Email.Contains(Email));
             //                                              //POPULATES
             //                                              //Populate group
             if (Group)
-                peoplequeryableFinalQuery.Include(p => p.Group);
+                peoplequeryableFinalQuery = peoplequeryableFinalQuery.Include(p => p.Group);
             //                                              //Populate tweets
             if (Tweets)
             {
-                peoplequeryableFinalQuery.Include(
+                peoplequeryableFinalQuery = peoplequeryableFinalQuery.Include(
                     p => p.Tweets
                     .Skip((twInPage - 1) * twSize)
                     .Take(twSize)
@@ -73,7 +73,7 @@ namespace FakeTwitter.Controllers
         }
 
         // GET: api/People/5
-        [Authorize]
+        // [Authorize]
         [ResponseType(typeof(Person))]
         public async Task<IHttpActionResult> GetPerson(
             //                                              //REQUIRED Id for the search
@@ -93,11 +93,11 @@ namespace FakeTwitter.Controllers
             //                                              //POPULATES
             //                                              //Populate group
             if (Group)
-                peoplequeryableFinalQuery.Include(p => p.Group);
+                peoplequeryableFinalQuery = peoplequeryableFinalQuery.Include(p => p.Group);
             //                                              //Populate tweets
             if (Tweets)
             {
-                peoplequeryableFinalQuery.Include(
+                peoplequeryableFinalQuery = peoplequeryableFinalQuery.Include(
                     p => p.Tweets
                     .Skip((twInPage - 1) * twSize)
                     .Take(twSize)
@@ -115,7 +115,7 @@ namespace FakeTwitter.Controllers
         }
 
         // PUT: api/People/5
-        [Authorize]
+        // [Authorize]
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutPerson(int id, Person person)
         {

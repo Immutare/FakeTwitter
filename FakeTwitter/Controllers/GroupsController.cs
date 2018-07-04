@@ -39,11 +39,11 @@ namespace FakeTwitter.Controllers
                 //                                          //The string to filter can not be empty either
                 Name != ""
                 )
-                groupqueryFinalQuery.Where(g => g.Name.Contains(Name));
+                groupqueryFinalQuery = groupqueryFinalQuery.Where(g => g.Name.Contains(Name));
             //                                              //POPULATES (using Eager loading)
             //                                              //Populate people from group
             if (People)
-                groupqueryFinalQuery.Include(g => g.People);
+                groupqueryFinalQuery = groupqueryFinalQuery.Include(g => g.People);
 
             return groupqueryFinalQuery;
         }

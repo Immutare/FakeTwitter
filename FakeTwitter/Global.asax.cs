@@ -18,6 +18,10 @@ namespace FakeTwitter
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
 
+            GlobalConfiguration.Configuration.Formatters.JsonFormatter
+            .SerializerSettings
+            .ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+
             Database.SetInitializer(new Initializer());
 
             var formatters = GlobalConfiguration.Configuration.Formatters;
@@ -27,7 +31,7 @@ namespace FakeTwitter
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
 
-            GlobalConfiguration.Configure(FilterConfig.Configure);
+            // GlobalConfiguration.Configure(FilterConfig.Configure);
         }
     }
 }
