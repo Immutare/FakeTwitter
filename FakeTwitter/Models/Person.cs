@@ -37,7 +37,7 @@ namespace FakeTwitter.Models
 
         }
 
-        public ApplicationUser(string userName): base(userName)
+        public ApplicationUser(string userName_I): base(userName_I)
         {
 
         }

@@ -20,6 +20,7 @@ namespace FakeTwitter.Controllers
         private FakeTwitterContext db = new FakeTwitterContext();
 
         // GET: api/People
+        [Authorize]
         public IQueryable<Person> GetPeople(
             //                                              //OPTIONAL PARAMETERS
 
@@ -72,6 +73,7 @@ namespace FakeTwitter.Controllers
         }
 
         // GET: api/People/5
+        [Authorize]
         [ResponseType(typeof(Person))]
         public async Task<IHttpActionResult> GetPerson(
             //                                              //REQUIRED Id for the search
@@ -113,6 +115,7 @@ namespace FakeTwitter.Controllers
         }
 
         // PUT: api/People/5
+        [Authorize]
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutPerson(int id, Person person)
         {
@@ -162,26 +165,34 @@ namespace FakeTwitter.Controllers
             else
             {
                 var userRoleId = db.Roles.First(c => c.Name == "User").Id;
-
-                var standardUser = db.Users.Add(new ApplicationUser(person.At.ToString())
-                {
-                    Email = person.ToString(),
-                    EmailConfirmed = true                   //NOTE: Falta validar la confirmación del correo
-                });
-                standardUser.Roles.Add(new IdentityUserRole { RoleId = userRoleId });
-
-                db.SaveChanges();
-
                 var store = new TwitterUserStore();
 
+                //                                          //      1.- Se crea un Application User
+                ApplicationUser appuserNewUser = db.Users.Add(new ApplicationUser(person.At.ToString())
+                {
+                    Email = person.Email.ToString(),
+                    EmailConfirmed = true
+                });
+
+                //                                          //      2.- Se le añade el rol deseado
+                appuserNewUser.Roles.Add(new IdentityUserRole { RoleId = userRoleId });
+
+                //                                          //      3.- Se hace el store.SetPasswordHashAsync con
+                //                                          //          la variable del ApplicationUser
                 await store.SetPasswordHashAsync(
-                    standardUser,
+                    appuserNewUser,
                     new TwitterUserManager().PasswordHasher.HashPassword(hashPass)
                 );
 
-                db.SaveChanges();
+                person.ApplicationUser = appuserNewUser;
 
+                //                                          //      4.- Se hace el context.People.AddOrUpdate pasando
+                //                                          //          la relación
                 db.People.Add(person);
+
+                //                                          //      5.- context.SaveChanges();
+                db.SaveChanges();
+                
                 await db.SaveChangesAsync();
 
                 return CreatedAtRoute("DefaultApi", new { id = person.Id }, person);
@@ -189,6 +200,8 @@ namespace FakeTwitter.Controllers
         }
 
         // DELETE: api/People/5
+        /*
+        [Authorize]
         [ResponseType(typeof(Person))]
         public async Task<IHttpActionResult> DeletePerson(int id)
         {
@@ -203,6 +216,7 @@ namespace FakeTwitter.Controllers
 
             return Ok(person);
         }
+        */
 
         protected override void Dispose(bool disposing)
         {

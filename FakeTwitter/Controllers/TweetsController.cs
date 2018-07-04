@@ -19,6 +19,7 @@ namespace FakeTwitter.Controllers
         private FakeTwitterContext db = new FakeTwitterContext();
 
         // GET: api/Tweets
+        [Authorize]
         public IQueryable<Tweet> GetTweets(
             //                                              //OPTIONAL PARAMETERS
 
@@ -66,6 +67,7 @@ namespace FakeTwitter.Controllers
         }
 
         // GET: api/Tweets/5
+        [Authorize]
         [ResponseType(typeof(Tweet))]
         public async Task<IHttpActionResult> GetTweet(
             int id,                                         //REQUIRED Id for the search
@@ -101,6 +103,7 @@ namespace FakeTwitter.Controllers
         }
 
         // PUT: api/Tweets/5
+        [Authorize]
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutTweet(int id, Tweet tweet)
         {
@@ -136,6 +139,7 @@ namespace FakeTwitter.Controllers
         }
 
         // POST: api/Tweets
+        [Authorize]
         [ResponseType(typeof(Tweet))]
         public async Task<IHttpActionResult> PostTweet(Tweet tweet)
         {
@@ -151,6 +155,7 @@ namespace FakeTwitter.Controllers
         }
 
         // DELETE: api/Tweets/5
+        [Authorize]
         [ResponseType(typeof(Tweet))]
         public async Task<IHttpActionResult> DeleteTweet(int id)
         {

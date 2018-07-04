@@ -1,5 +1,6 @@
 ﻿using FakeTwitter.Core;
 using FakeTwitter.Identity;
+using FakeTwitter.Models;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataHandler.Encoder;

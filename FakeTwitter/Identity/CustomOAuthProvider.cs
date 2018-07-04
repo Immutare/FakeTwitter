@@ -1,4 +1,5 @@
 ﻿using FakeTwitter.Core;
+using FakeTwitter.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
@@ -19,8 +20,12 @@ namespace FakeTwitter.Identity
         {
             context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
 
-            var user = context.OwinContext.Get<FakeTwitterContext>().Users.FirstOrDefault(u => u.UserName == context.UserName);
-            if (!context.OwinContext.Get<TwitterUserManager>().CheckPassword(user, context.Password))
+            var user = context.OwinContext.Get<FakeTwitterContext>()
+                .Users.FirstOrDefault(u => u.UserName == context.UserName);
+            if (!
+                context.OwinContext.Get<TwitterUserManager>()
+                .CheckPassword(user, context.Password)
+                )
             {
                 context.SetError("invalid_grant", "The user name or password is incorrect");
                 context.Rejected();
@@ -39,13 +44,15 @@ namespace FakeTwitter.Identity
             return Task.FromResult<object>(null);
         }
 
-        private static ClaimsIdentity SetClaimsIdentity(OAuthGrantResourceOwnerCredentialsContext context, IdentityUser user)
+        private static ClaimsIdentity SetClaimsIdentity(OAuthGrantResourceOwnerCredentialsContext context, ApplicationUser user)
         {
             var identity = new ClaimsIdentity("JWT");
             identity.AddClaim(new Claim(ClaimTypes.Name, context.UserName));
             identity.AddClaim(new Claim("sub", context.UserName));
 
-            var userRoles = context.OwinContext.Get<TwitterUserManager>().GetRoles(user.Id);
+            //Error
+            //The entity type IdentityUser is not part of the model for the current context.
+            var userRoles = context.OwinContext.Get<TwitterUserManager>().GetRoles(user.Id.ToString());
             foreach (var role in userRoles)
             {
                 identity.AddClaim(new Claim(ClaimTypes.Role, role));
