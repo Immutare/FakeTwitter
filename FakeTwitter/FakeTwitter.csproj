@@ -180,6 +180,9 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\GroupViewModel.cs" />
+    <Compile Include="ViewModels\PersonViewModel.cs" />
+    <Compile Include="ViewModels\TweetViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

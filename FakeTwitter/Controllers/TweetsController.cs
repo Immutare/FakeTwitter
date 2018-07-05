@@ -11,6 +11,8 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using FakeTwitter.Core;
 using FakeTwitter.Models;
+using FakeTwitter.ViewModels;
+using Newtonsoft.Json;
 
 namespace FakeTwitter.Controllers
 {
@@ -37,7 +39,9 @@ namespace FakeTwitter.Controllers
             //                                              //Populate all responses from a Tweet
             bool Responses = false,
             //                                              //Populate the tweet in response/answered, default true
-            bool InResponseTo = true
+            bool InResponseTo = true,
+            //                                              //Other type of commands
+            int Order = 1
             )
         {
             IQueryable<Tweet> tweetsqueryFinalQuery = db.Tweets;
@@ -66,7 +70,16 @@ namespace FakeTwitter.Controllers
             //                                              //Populate the tweet in response/answered, default true
             if (InResponseTo)
                 tweetsqueryFinalQuery = tweetsqueryFinalQuery.Include(t => t.InResponseTo).AsNoTracking();
-            
+            //                                              //Other types of commands
+            if (Order > 0)
+                tweetsqueryFinalQuery = tweetsqueryFinalQuery.OrderBy(t => t.DatePublished);
+            else if (Order < 0)
+                tweetsqueryFinalQuery = tweetsqueryFinalQuery.OrderByDescending(t => t.DatePublished);
+
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            string json = JsonConvert.SerializeObject(tweetsqueryFinalQuery.AsNoTracking(), settings);
+
             return tweetsqueryFinalQuery.AsNoTracking();
         }
 
@@ -101,6 +114,9 @@ namespace FakeTwitter.Controllers
             {
                 return NotFound();
             }
+
+            string json = JsonConvert.SerializeObject(tweet);
+            System.Console.WriteLine(json);
 
             return Ok(tweet);
         }
@@ -143,23 +159,23 @@ namespace FakeTwitter.Controllers
 
         // POST: api/Tweets
         // [Authorize]
-        [ResponseType(typeof(Tweet))]
-        public async Task<IHttpActionResult> PostTweet(Tweet tweet)
+        // [ResponseType(typeof(Tweet))]
+        public async Task<IHttpActionResult> PostTweet([FromBody] TweetViewModel tweetViewModel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.Tweets.Add(tweet);
+            db.Tweets.Add(tweetViewModel.ToTweet());
             await db.SaveChangesAsync();
 
-            return CreatedAtRoute("DefaultApi", new { id = tweet.Id }, tweet);
+            return CreatedAtRoute("DefaultApi", new { id = tweetViewModel.Id }, tweetViewModel.ToJsonFormat());
         }
 
         // DELETE: api/Tweets/5
         // [Authorize]
-        [ResponseType(typeof(Tweet))]
+        // [ResponseType(typeof(Tweet))]
         public async Task<IHttpActionResult> DeleteTweet(int id)
         {
             Tweet tweet = await db.Tweets.FindAsync(id);
@@ -168,10 +184,13 @@ namespace FakeTwitter.Controllers
                 return NotFound();
             }
 
+
             db.Tweets.Remove(tweet);
             await db.SaveChangesAsync();
 
-            return Ok(tweet);
+            TweetViewModel tweetViewModel = new TweetViewModel(tweet);
+
+            return Ok(tweetViewModel.ToJsonFormat());
         }
 
         protected override void Dispose(bool disposing)
