@@ -14,11 +14,11 @@ namespace FakeTwitter.Core
         {
             //_userManager = new UserManager<UserModel>(new UserStore<UserModel>(_ctx));
         }
-        /*
-        public TwitterUserManager(UserStore<ApplicationUser> userStore_I) : base(userStore_I)
+        
+        public TwitterUserManager(UserStore<IdentityUser> userStore_I) : base(userStore_I)
         {
 
         }
-        */
+        
     }
 }

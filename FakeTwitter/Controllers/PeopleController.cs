@@ -46,13 +46,13 @@ namespace FakeTwitter.Controllers
 
             //                                              //FILTERS
             //                                              //Filter by Name
-            if (Name != null && Name != "")
+            if (string.IsNullOrWhiteSpace(Name))
                 peoplequeryableFinalQuery = peoplequeryableFinalQuery.Where(p => p.Name.Contains(Name));
             //                                              //Filter by At (@)
-            if (At != null && At != "")
+            if (string.IsNullOrWhiteSpace(At))
                 peoplequeryableFinalQuery = peoplequeryableFinalQuery.Where(p => p.At.Contains(At));
             //                                              //Filter by Email
-            if (Email != null && Email != "")
+            if (string.IsNullOrWhiteSpace(Email))
                 peoplequeryableFinalQuery = peoplequeryableFinalQuery.Where(p => p.Email.Contains(Email));
             //                                              //POPULATES
             //                                              //Populate group
@@ -151,6 +151,7 @@ namespace FakeTwitter.Controllers
         }
 
         // POST: api/People
+        [AllowAnonymous]
         [ResponseType(typeof(Person))]
         public async Task<IHttpActionResult> PostPerson(Person person, [FromBody] string hashPass = null)
         {

@@ -15,11 +15,19 @@ namespace FakeTwitter.Core
         public DbSet<Group> Groups { get; set; }
         public DbSet<Tweet> Tweets { get; set; }
         public DbSet<Person> People { get; set; }
-        //public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        // public DbSet<ApplicationUser> IdentityUsers { get; set; }
+
+        // public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
         public FakeTwitterContext() : base("FakeTwitterConnection")
         {
             this.Configuration.LazyLoadingEnabled = false;
+        }
+        //-------------------------------------------------------------------------------------------------------------
+
+        public static FakeTwitterContext Create()
+        {
+            return new FakeTwitterContext();
         }
 
         //-------------------------------------------------------------------------------------------------------------

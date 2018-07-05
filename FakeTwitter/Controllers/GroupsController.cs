@@ -34,10 +34,8 @@ namespace FakeTwitter.Controllers
             //                                              //FILTERS 
             //                                              //Filter by the name
             if (
-                //                                          //The string to filter can not be null
-                Name != null && 
-                //                                          //The string to filter can not be empty either
-                Name != ""
+                //                                          //The string to filter can not be null or empty
+                string.IsNullOrWhiteSpace(Name)
                 )
                 groupqueryFinalQuery = groupqueryFinalQuery.Where(g => g.Name.Contains(Name));
             //                                              //POPULATES (using Eager loading)

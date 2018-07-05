@@ -50,13 +50,38 @@ namespace FakeTwitter.Identity
             identity.AddClaim(new Claim(ClaimTypes.Name, context.UserName));
             identity.AddClaim(new Claim("sub", context.UserName));
 
-            //Error
-            //The entity type IdentityUser is not part of the model for the current context.
-            var userRoles = context.OwinContext.Get<TwitterUserManager>().GetRoles(user.Id);
-            // var userRoles = context.OwinContext.Get<TwitterUserManager>().GetRoles(user.Id.ToString());
-            foreach (var role in userRoles)
+            
+            var dbcontext = new FakeTwitterContext();
+            var getRolesUsers = dbcontext.Roles.SelectMany(r => r.Users).Where(ur => ur.UserId == user.Id);
+
+            
+            var getRoles = dbcontext.Roles.Join(
+                getRolesUsers,
+                r => r.Id,
+                ru => ru.RoleId,
+                (qRole, qRoleUser) =>
+                new
+                {
+                    UserId = qRoleUser.UserId,
+                    RoleId = qRole.Id,
+                    RoleName = qRole.Name
+                }
+                ).Where( roluser => roluser.UserId == user.Id);
+            
+            /*
+            foreach (var role in getRoles)
             {
-                identity.AddClaim(new Claim(ClaimTypes.Role, role));
+                System.Console.WriteLine(String.Format("User: {0}\tRoleId: {1}\tRoleName: {2}", role.UserId, role.RoleId, role.RoleName));
+            }
+            */
+
+            //                                              //Exception
+            //                                              //The entity type IdentityUser is not part of the model for
+            //                                              //      the current context.
+            // var userRoles = context.OwinContext.Get<TwitterUserManager>().GetRoles(user.Id);
+            foreach (var role in getRoles)
+            {
+                identity.AddClaim(new Claim(ClaimTypes.Role, role.RoleName));
             }
 
             return identity;

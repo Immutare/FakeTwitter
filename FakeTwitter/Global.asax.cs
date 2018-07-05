@@ -31,7 +31,7 @@ namespace FakeTwitter
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
 
-            // GlobalConfiguration.Configure(FilterConfig.Configure);
+            GlobalConfiguration.Configure(FilterConfig.Configure);
         }
     }
 }
