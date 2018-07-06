@@ -386,7 +386,13 @@ namespace FakeTwitter.Migrations
 
             context.SaveChanges();
 
-            context.Tweets.AddOrUpdate(new Tweet { Id = 10, DatePublished = System.DateTime.Now, Images = null, PersonId = 10, Text = "I came early to work!" });
+            context.Tweets.AddOrUpdate(new Tweet {
+                Id = 10, DatePublished = System.DateTime.Now,
+                Images = "https://i.pinimg.com/736x/c1/10/b3/c110b37fd4b9489b13fca5eef8c42b25.jpg|https://i.pinimg.com/736x/85/e2/a6/85e2a67267588d367a6bf889a8395d54.jpg",
+                PersonId = 10,
+                Text = "I came early to work!",
+                Likes = "9|2018-07-06T11:00:45.000&8|2018-07-06T11:30:45.000"
+            });
             context.Tweets.AddOrUpdate(new Tweet { Id = 11, DatePublished = System.DateTime.Now, Images = null, PersonId = 9, Text = "No way", ResponseId = 10});
             context.Tweets.AddOrUpdate(new Tweet { Id = 12, DatePublished = System.DateTime.Now, Images = null, PersonId = 8, Text = "Is it April Fools?", ResponseId = 10 });
             context.Tweets.AddOrUpdate(new Tweet { Id = 13, DatePublished = System.DateTime.Now, Images = null, PersonId = 9, Text = "I know, right?", ResponseId = 12});

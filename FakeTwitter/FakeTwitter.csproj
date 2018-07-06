@@ -171,6 +171,10 @@
     <Compile Include="Migrations\201807031419149_InitialMigration.Designer.cs">
       <DependentUpon>201807031419149_InitialMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201807061453323_TweetLengthTo120.cs" />
+    <Compile Include="Migrations\201807061453323_TweetLengthTo120.Designer.cs">
+      <DependentUpon>201807061453323_TweetLengthTo120.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\Tweet.cs" />
@@ -199,6 +203,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201807031419149_InitialMigration.resx">
       <DependentUpon>201807031419149_InitialMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807061453323_TweetLengthTo120.resx">
+      <DependentUpon>201807061453323_TweetLengthTo120.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

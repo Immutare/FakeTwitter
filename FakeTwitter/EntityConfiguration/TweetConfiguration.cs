@@ -14,7 +14,9 @@ namespace FakeTwitter.EntityConfiguration
             //                                              //PROPERTIES
             Property(t => t.Text)
                 .IsRequired()
-                .HasMaxLength(280);
+                .HasMaxLength(120);
+
+            // Property(t => t.Likes_Z)
 
             //                                              //RELATIONSHIPS
             HasMany(t => t.Responses)

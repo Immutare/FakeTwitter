@@ -63,17 +63,21 @@ namespace FakeTwitter.ViewModels
         //-------------------------------------------------------------------------------------------------------------
         public Tweet ToTweet()
         {
-            return new Tweet
-            {
-                Id = this.Id,
-                Likes = this.Likes,
-                DatePublished = this.DatePublished,
-                Text = this.Text,
-                Images = this.Images,
-                PersonId = this.PersonId,
-                ResponseId = this.ResponseId
-            };
+            Tweet tweetToReturn = new Tweet();
+
+            tweetToReturn.Id = this.Id;
+            tweetToReturn.Likes = TweetJsonFormat.ProcessLikesFromString(this.Likes);
+            tweetToReturn.DatePublished = this.DatePublished;
+            tweetToReturn.Text = this.Text;
+            tweetToReturn.Images = TweetJsonFormat.ProcessIncomingArrayOfImages(this.Images);
+            tweetToReturn.PersonId = this.PersonId;
+            tweetToReturn.ResponseId = this.ResponseId;
+
+            return tweetToReturn;
         }
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        
+        
         //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         public TweetJsonFormat ToJsonFormat()
         {
@@ -100,7 +104,7 @@ namespace FakeTwitter.ViewModels
         {
 
         }
-
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         public TweetJsonFormat(TweetViewModel tweetViewModel)
         {
             this.Id = tweetViewModel.Id;
@@ -108,10 +112,11 @@ namespace FakeTwitter.ViewModels
             this.Text = tweetViewModel.Text;
             this.PersonId = tweetViewModel.PersonId;
             this.ResponseId = tweetViewModel.ResponseId;
+
+            // this.Likes = tweetViewModel.Likes;
+            // this.Images = tweetViewModel.Images;
+            this.Likes = Like.ParseLikes(tweetViewModel.Likes);
             
-            this.Likes = Like.parseLikes(tweetViewModel.Likes);
-            //                                              //Porque se usó pipe?
-            //                                              //https://www.seroundtable.com/google-pipes-in-urls-20735.html
             this.Images = TweetJsonFormat.ParseImages(tweetViewModel.Images);
         }
         //-------------------------------------------------------------------------------------------------------------
@@ -127,9 +132,70 @@ namespace FakeTwitter.ViewModels
             if (string.IsNullOrWhiteSpace(strImagesFromTweet_I))
                 return null;
 
+            //                                              //Porque se usó pipe?
+            //                                              //https://www.seroundtable.com/google-pipes-in-urls-20735.html
             return strImagesFromTweet_I.Split('|');
         }
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        public static string StrImagesToJson(string strImagesFromTweet_I)
+        {
+            if (string.IsNullOrWhiteSpace(strImagesFromTweet_I))
+                return null;
 
+            string[] arrstrImages = TweetJsonFormat.ParseImages(strImagesFromTweet_I);
+
+            return JsonConvert.SerializeObject(arrstrImages);
+        }
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+        public static string ProcessIncomingArrayOfImages(string strImagesFromTweet_I)
+        {
+            if (string.IsNullOrWhiteSpace(strImagesFromTweet_I))
+                return null;
+
+            string[] arrstrImages = JsonConvert.DeserializeObject<string[]>(strImagesFromTweet_I);
+
+            System.Diagnostics.Debug.WriteLine("IMAGENES!!!!!!!!!!!!!!");
+            foreach(string strImage in arrstrImages)
+            {
+                System.Diagnostics.Debug.WriteLine(strImage);
+            }
+
+            return TweetJsonFormat.ImagesToStr(arrstrImages);
+        }
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        public static string ImagesToStr(string[] arrstrImages_I)
+        {
+            string strfinalString = arrstrImages_I.Aggregate((i, j) => i + "|" + j);
+
+            return strfinalString;
+        }
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        public static string ProcessLikesFromString(string strLikes_I)
+        {
+            Like[] arrlikeLikes = JsonConvert.DeserializeObject<Like[]>(strLikes_I);
+
+            return TweetJsonFormat.LikesToStr(arrlikeLikes);
+        }
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        public static string LikesToStr(Like[] likeLikes_I)
+        {
+            List<string> darrstrLikes = new List<string>();
+
+            foreach (Like like in likeLikes_I)
+            {
+                string strLike = string.Format("{0}|{1}", like.PersonId.ToString(), like.Date.ToString());
+
+                System.Diagnostics.Debug.WriteLine(strLike);
+
+                darrstrLikes.Add(strLike);
+            }
+
+            string strfinalString = darrstrLikes.Aggregate((i, j) => i + "&" + j);
+
+            return strfinalString;
+        }
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     }
     //-----------------------------------------------------------------------------------------------------------------
     public class Like
@@ -167,22 +233,43 @@ namespace FakeTwitter.ViewModels
         //-------------------------------------------------------------------------------------------------------------
         //                                                  //METHODS
         //-------------------------------------------------------------------------------------------------------------
-        public static Like[] parseLikes(string strLikesToParse_I)
+        public static Like[] ParseLikes(string strLikesToParse_I)
         {
+            if (string.IsNullOrWhiteSpace(strLikesToParse_I))
+                return null;
+
             List<Like> darrLikes = new List<Like>();
+
+            //                                              //Splits the different likes by the letter &
             List<string> strPersonAndDate = strLikesToParse_I.Split('&').ToList();
 
+            //                                              //Iterates the array to construct and append each Like 
+            //                                              //      object.
             foreach (string strLikeData in strPersonAndDate)
             {
+                //                                          //Splits the PersonId and the Date (in that order)
                 string[] arrstrSplitData = strLikeData.Split('|');
 
+                //                                          //If the split is not even then returns a null
                 if (arrstrSplitData.Length % 2 != 0)
                     return null;
 
+                //                                          //Sends two strings to the constructor wich parses each 
+                //                                          //      string
                 darrLikes.Add(new Like(arrstrSplitData[0], arrstrSplitData[1]));
             }
 
             return darrLikes.ToArray();
+        }
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        public static string LikesToJson(string strLikesToParse_I)
+        {
+            if (string.IsNullOrWhiteSpace(strLikesToParse_I))
+                return null;
+
+            Like[] likeParsedLikes = Like.ParseLikes(strLikesToParse_I);
+
+            return JsonConvert.SerializeObject(likeParsedLikes);
         }
     }
     //-----------------------------------------------------------------------------------------------------------------

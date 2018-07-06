@@ -78,7 +78,10 @@ namespace FakeTwitter.Controllers
 
             JsonSerializerSettings settings = new JsonSerializerSettings();
             settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+
             string json = JsonConvert.SerializeObject(tweetsqueryFinalQuery.AsNoTracking(), settings);
+
+            //                                              //Se va a empezar a buscar todos los cosos
 
             return tweetsqueryFinalQuery.AsNoTracking();
         }
@@ -115,28 +118,25 @@ namespace FakeTwitter.Controllers
                 return NotFound();
             }
 
-            string json = JsonConvert.SerializeObject(tweet);
-            System.Console.WriteLine(json);
-
             return Ok(tweet);
         }
 
         // PUT: api/Tweets/5
         // [Authorize]
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutTweet(int id, Tweet tweet)
+        public async Task<IHttpActionResult> PutTweet(int id, [FromBody] TweetViewModel tweetViewModel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != tweet.Id)
+            if (id != tweetViewModel.Id)
             {
                 return BadRequest();
             }
 
-            db.Entry(tweet).State = EntityState.Modified;
+            db.Entry(tweetViewModel.ToTweet()).State = EntityState.Modified;
 
             try
             {
@@ -167,10 +167,12 @@ namespace FakeTwitter.Controllers
                 return BadRequest(ModelState);
             }
 
+            
+            Tweet algo = tweetViewModel.ToTweet();
             db.Tweets.Add(tweetViewModel.ToTweet());
             await db.SaveChangesAsync();
 
-            return CreatedAtRoute("DefaultApi", new { id = tweetViewModel.Id }, tweetViewModel.ToJsonFormat());
+            return CreatedAtRoute("DefaultApi", new { id = tweetViewModel.Id }, algo);
         }
 
         // DELETE: api/Tweets/5
