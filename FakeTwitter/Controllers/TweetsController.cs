@@ -41,7 +41,11 @@ namespace FakeTwitter.Controllers
             //                                              //Populate the tweet in response/answered, default true
             bool InResponseTo = true,
             //                                              //Other type of commands
-            int Order = 1
+            int Order = 1,
+            //                                              //Tweets Size
+            int twSize = 0,
+            //                                              //Tweets Page
+            int twInPage = 1
             )
         {
             IQueryable<Tweet> tweetsqueryFinalQuery = db.Tweets;
@@ -71,17 +75,23 @@ namespace FakeTwitter.Controllers
             if (InResponseTo)
                 tweetsqueryFinalQuery = tweetsqueryFinalQuery.Include(t => t.InResponseTo).AsNoTracking();
             //                                              //Other types of commands
+            //                                              //Pagination
+            if (twSize > 0)
+                tweetsqueryFinalQuery.Skip((twInPage - 1) * twSize).Take(twSize);
+            //                                              //Orders the tweets by date
             if (Order > 0)
                 tweetsqueryFinalQuery = tweetsqueryFinalQuery.OrderBy(t => t.DatePublished);
             else if (Order < 0)
                 tweetsqueryFinalQuery = tweetsqueryFinalQuery.OrderByDescending(t => t.DatePublished);
 
+            /*
             JsonSerializerSettings settings = new JsonSerializerSettings();
             settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
             string json = JsonConvert.SerializeObject(tweetsqueryFinalQuery.AsNoTracking(), settings);
 
             //                                              //Se va a empezar a buscar todos los cosos
+            */
 
             return tweetsqueryFinalQuery.AsNoTracking();
         }

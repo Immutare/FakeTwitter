@@ -18,6 +18,7 @@ namespace FakeTwitter.ViewModels
         public string Photo { get; set; }
         public string Email { get; set; }
         public int GroupId { get; set; }
+        public string HashPassword { get; set; }
         //-------------------------------------------------------------------------------------------------------------
         //                                                  //CONSTRUCTORS
         //-------------------------------------------------------------------------------------------------------------
@@ -39,6 +40,7 @@ namespace FakeTwitter.ViewModels
             this.Photo = personViewModel.Photo;
             this.Email = personViewModel.Email;
             this.GroupId = personViewModel.GroupId;
+            this.HashPassword = personViewModel.HashPassword;
         }
         //-------------------------------------------------------------------------------------------------------------
         //                                                  //AUXILIAR CLASS

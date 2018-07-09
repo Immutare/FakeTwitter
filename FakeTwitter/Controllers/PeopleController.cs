@@ -11,6 +11,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using FakeTwitter.Core;
 using FakeTwitter.Models;
+using FakeTwitter.ViewModels;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace FakeTwitter.Controllers
@@ -153,13 +154,13 @@ namespace FakeTwitter.Controllers
         // POST: api/People
         [AllowAnonymous]
         [ResponseType(typeof(Person))]
-        public async Task<IHttpActionResult> PostPerson(Person person, [FromBody] string hashPass = null)
+        public async Task<IHttpActionResult> PostPerson([FromBody] PersonViewModel personvmPerson)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            if (hashPass == null)
+            if (personvmPerson.HashPassword == null)
             {
                 return BadRequest("Password was not found");
             }
@@ -169,34 +170,33 @@ namespace FakeTwitter.Controllers
                 var store = new TwitterUserStore();
 
                 //                                          //      1.- Se crea un Application User
-                ApplicationUser appuserNewUser = db.Users.Add(new ApplicationUser(person.At.ToString())
+                ApplicationUser applicationNewUser = db.Users.Add(new ApplicationUser(personvmPerson.At)
                 {
-                    Email = person.Email.ToString(),
+                    Email = personvmPerson.Email,
                     EmailConfirmed = true
                 });
 
                 //                                          //      2.- Se le añade el rol deseado
-                appuserNewUser.Roles.Add(new IdentityUserRole { RoleId = userRoleId });
+                applicationNewUser.Roles.Add(new IdentityUserRole { RoleId = userRoleId });
 
                 //                                          //      3.- Se hace el store.SetPasswordHashAsync con
                 //                                          //          la variable del ApplicationUser
                 await store.SetPasswordHashAsync(
-                    appuserNewUser,
-                    new TwitterUserManager().PasswordHasher.HashPassword(hashPass)
+                    applicationNewUser,
+                    new TwitterUserManager().PasswordHasher.HashPassword(personvmPerson.HashPassword)
                 );
-
-                person.ApplicationUser = appuserNewUser;
 
                 //                                          //      4.- Se hace el context.People.AddOrUpdate pasando
                 //                                          //          la relación
-                db.People.Add(person);
+                Person personNewPerson = db.People.Add(personvmPerson.ToPerson());
+                personvmPerson.Id = personNewPerson.Id;
 
                 //                                          //      5.- context.SaveChanges();
-                db.SaveChanges();
-                
+                //db.SaveChanges();
+
                 await db.SaveChangesAsync();
 
-                return CreatedAtRoute("DefaultApi", new { id = person.Id }, person);
+                return CreatedAtRoute("DefaultApi", new { id = personvmPerson.Id }, personvmPerson.ToPerson());
             }
         }
 

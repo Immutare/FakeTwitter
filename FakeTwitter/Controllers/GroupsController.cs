@@ -128,6 +128,7 @@ namespace FakeTwitter.Controllers
             return CreatedAtRoute("DefaultApi", new { id = group.Id }, group);
         }
 
+        /*
         // DELETE: api/Groups/5
         [ResponseType(typeof(Group))]
         public async Task<IHttpActionResult> DeleteGroup(int id)
@@ -143,6 +144,7 @@ namespace FakeTwitter.Controllers
 
             return Ok(group);
         }
+        */
 
         protected override void Dispose(bool disposing)
         {
