@@ -38,9 +38,13 @@ namespace FakeTwitter.Identity
             return Task.FromResult<object>(null);
         }
 
+        //                                                  //Validates the client using the JWT sent
         public override Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
         {
             context.Validated();
+
+            
+
             return Task.FromResult<object>(null);
         }
 

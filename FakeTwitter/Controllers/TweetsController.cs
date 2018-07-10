@@ -21,6 +21,7 @@ namespace FakeTwitter.Controllers
         private FakeTwitterContext db = new FakeTwitterContext();
 
         // GET: api/Tweets
+        
         public IQueryable<Tweet> GetTweets(
             //                                              //OPTIONAL PARAMETERS
 
@@ -32,7 +33,7 @@ namespace FakeTwitter.Controllers
             //                                              //Filter by @ from person
             string PersonAt = null,
             //                                              //Filter by group
-            int GroupId = 0,
+            // int GroupId = 0,
             //                                              //POPULATE NAVIGATORS
             //                                              //Populate Person(User), true by default
             bool Person = true,
@@ -61,8 +62,10 @@ namespace FakeTwitter.Controllers
             if (PersonAt != null && PersonAt != "")
                 tweetsqueryFinalQuery = tweetsqueryFinalQuery.Where(t => t.Person.At == PersonAt);
             //                                              //Filter by the group
+            /*
             if (GroupId != 0)
                 tweetsqueryFinalQuery = tweetsqueryFinalQuery.Where(t => t.Person.GroupId == GroupId);
+            */
 
             //                                              //POPULATES
             //                                              //Populates the info from the person/user
@@ -83,16 +86,18 @@ namespace FakeTwitter.Controllers
                 tweetsqueryFinalQuery = tweetsqueryFinalQuery.OrderBy(t => t.DatePublished);
             else if (Order < 0)
                 tweetsqueryFinalQuery = tweetsqueryFinalQuery.OrderByDescending(t => t.DatePublished);
+            
+            //                                              //Gets the current UserName from who's identified/logged in
+            string strUser = System.Web.HttpContext.Current.User.Identity.Name;
+            System.Diagnostics.Debug.WriteLine(strUser);
 
-            /*
-            JsonSerializerSettings settings = new JsonSerializerSettings();
-            settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-
-            string json = JsonConvert.SerializeObject(tweetsqueryFinalQuery.AsNoTracking(), settings);
-
-            //                                              //Se va a empezar a buscar todos los cosos
-            */
-
+            //                                              //We ask for the person entity from that user so we can 
+            //                                              //      filter the tweets he gets from his current group
+            var userLoggedUser = db.People.Where(p => p.ApplicationUser.UserName == strUser).First();
+            
+            //                                              //We add the filter
+            tweetsqueryFinalQuery = tweetsqueryFinalQuery.Where(t => t.Person.GroupId == userLoggedUser.GroupId);
+            
             return tweetsqueryFinalQuery.AsNoTracking();
         }
 
@@ -123,9 +128,22 @@ namespace FakeTwitter.Controllers
 
             Tweet tweet = await tweetsqueryFinalQuery.AsNoTracking().FirstAsync();
 
+            //                                              //Gets the current UserName from who's identified/logged in
+            string strUser = System.Web.HttpContext.Current.User.Identity.Name;
+            System.Diagnostics.Debug.WriteLine(strUser);
+
+            //                                              //We ask for the person entity from that user so we can 
+            //                                              //      filter the tweets he gets from his current group
+            var userLoggedUser = db.People.Where(p => p.ApplicationUser.UserName == strUser).First();
+
             if (tweet == null)
             {
                 return NotFound();
+            }
+
+            if (tweet.Person.GroupId != userLoggedUser.GroupId)
+            {
+                return Unauthorized();
             }
 
             return Ok(tweet);
@@ -147,6 +165,7 @@ namespace FakeTwitter.Controllers
             }
 
             db.Entry(tweetViewModel.ToTweet()).State = EntityState.Modified;
+
 
             try
             {
