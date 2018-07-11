@@ -8,6 +8,7 @@ using FakeTwitter.Core;
 using FakeTwitter.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.IO;
+using Microsoft.Owin.Cors;
 
 namespace FakeTwitter
 {
@@ -15,6 +16,7 @@ namespace FakeTwitter
     {
         public void Configuration(IAppBuilder app)
         {
+            app.UseCors(CorsOptions.AllowAll);
             ConfigureOAuth(app);
         }
     }

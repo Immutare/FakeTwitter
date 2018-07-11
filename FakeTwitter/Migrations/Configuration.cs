@@ -404,10 +404,10 @@ namespace FakeTwitter.Migrations
             context.Tweets.AddOrUpdate(new Tweet { Id = 16, DatePublished = System.DateTime.Now, Images = null, PersonId = 5, Text = "Swift is the best language!"});
             context.Tweets.AddOrUpdate(new Tweet { Id = 17, DatePublished = System.DateTime.Now, Images = null, PersonId = 6, Text = "Androids gives so much trouble"});
             context.Tweets.AddOrUpdate(new Tweet { Id = 18, DatePublished = System.DateTime.Now, Images = null, PersonId = 7, Text = "Coffee makes me happy"});
-            context.Tweets.AddOrUpdate(new Tweet { Id = 19, DatePublished = System.DateTime.Now, Images = null, PersonId = 3, Text = "I'm going to have a meeting at lunch :(", ResponseId = 15});
 
             context.SaveChanges();
 
+            context.Tweets.AddOrUpdate(new Tweet { Id = 19, DatePublished = System.DateTime.Now, Images = null, PersonId = 3, Text = "I'm going to have a meeting at lunch :(", ResponseId = 15});
             context.Tweets.AddOrUpdate(new Tweet { Id = 20, DatePublished = System.DateTime.Now, Images = null, PersonId = 1, Text = "Meeting at lunch?!"});
             context.Tweets.AddOrUpdate(new Tweet { Id = 21, DatePublished = System.DateTime.Now, Images = null, PersonId = 2, Text = "Again?! Uhg, at least I brought lunch to work", ResponseId = 20});
             context.Tweets.AddOrUpdate(new Tweet { Id = 22, DatePublished = System.DateTime.Now, Images = null, PersonId = 1, Text = "I did not :(", ResponseId = 21});
